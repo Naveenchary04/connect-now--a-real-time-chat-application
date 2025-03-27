@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect Now</title>
+</head>
+<body>
+  <h1>Connect Now</h1>
+  <div>
+    <h2>Chat</h2>
+    <input id="to" placeholder="Send to (IP)" />
+    <input id="message" placeholder="Type a message" />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <div>
+    <h2>Group Chat</h2>
+    <input id="groupMessage" placeholder="Type group message" />
+    <button onclick="sendGroupMessage()">Send to Group</button>
+  </div>
+
+  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+  <script>
+    const socket = io("http://localhost:3000");
+
+    // Register your IP
+    const YOUR_IP = "your-generated-ip";
+    socket.emit("register-ip", YOUR_IP);
+
+    // Send personal messages
+    function sendMessage() {
+      const to = document.getElementById("to").value;
+      const message = document.getElementById("message").value;
+      socket.emit("personal-message", { to, from: YOUR_IP, message });
+    }
+
+    // Send group messages
+    function sendGroupMessage() {
+      const groupId = "your-group-id";
+      const message = document.getElementById("groupMessage").value;
+      socket.emit("group-message", { groupId, sender: YOUR_IP, message });
+    }
+
+    // Listen for messages
+    socket.on("receive-message", (data) => {
+      alert(`Message from ${data.from}: ${data.message}`);
+    });
+
+    socket.on(`group-your-group-id`, (data) => {
+      alert(`Group Message from ${data.sender}: ${data.message}`);
+    });
+  </script>
+</body>
+</html>
